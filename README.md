@@ -80,7 +80,16 @@ New React extensions. Registered directly in the `@VendurePlugin` decorator:
 
 The entry file uses `defineDashboardExtension()` from `@vendure/dashboard` to declare routes, page blocks, widgets, action bar items, and custom form components.
 
-For GraphQL type generation in dashboard extensions, use the [IDE GraphQL integration](https://docs.vendure.io/current/core/extending-the-dashboard/extending-overview#ide-graphql-integration) approach rather than the codegen script.
+For GraphQL in dashboard extensions, use IDE integration for autocomplete and type-checking:
+
+1. Install the [GraphQL extension for VS Code](https://marketplace.visualstudio.com/items?itemName=GraphQL.vscode-graphql) or [IntelliJ plugin](https://plugins.jetbrains.com/plugin/8097-graphql)
+2. Generate the schema: `npx vendure schema --api admin`
+3. Create a `graphql.config.yml` in the project root:
+   ```yaml
+   schema: 'schema.graphql'
+   ```
+
+See the [full IDE GraphQL integration guide](https://docs.vendure.io/current/core/extending-the-dashboard/extending-overview#ide-graphql-integration) for details.
 
 ### Vite config (`vite.config.mts`)
 
