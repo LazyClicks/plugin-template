@@ -36,7 +36,8 @@ import {ui} from "./ui";
     config.authOptions.customPermissions.push(examplePermission);
     return config;
   },
-  compatibility: '>=3.0.0'
+  compatibility: '>=3.0.0',
+  dashboard: './dashboard/index.tsx',
 })
 export class ExamplePlugin {
   /** @internal */

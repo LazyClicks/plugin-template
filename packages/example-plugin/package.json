@@ -14,9 +14,12 @@
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
     "scripts": {
-        "dev": "ts-node dev-server/index.ts",
+        "dev": "concurrently npm:dev:*",
+        "dev:server": "ts-node dev-server/index.ts",
+        "dev:dashboard": "vite --clearScreen false",
         "codegen": "ts-node generate-types.ts",
         "build": "rimraf dist && tsc -p ./tsconfig.build.json && ts-node copy-ui-src.ts",
+        "build:dashboard": "vite build",
         "e2e": "cross-env PACKAGE=example-plugin vitest -c ../../utils/e2e/vitest.config.mts"
     },
     "dependencies": {}

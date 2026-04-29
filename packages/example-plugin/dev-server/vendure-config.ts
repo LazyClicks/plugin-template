@@ -1,5 +1,6 @@
 import { DefaultSearchPlugin, VendureConfig } from "@vendure/core";
 import { AdminUiPlugin } from "@vendure/admin-ui-plugin";
+import { DashboardPlugin } from "@vendure/dashboard/plugin";
 import "dotenv/config";
 import path from "path";
 import { ExamplePlugin } from "../src";
@@ -49,6 +50,10 @@ export const config: VendureConfig = {
         extensions: [ExamplePlugin.uiExtensions],
         outputPath: path.join(__dirname, "./admin-ui"),
       }),
+    }),
+    DashboardPlugin.init({
+      route: "dashboard",
+      appDir: path.join(__dirname, "./dashboard"),
     }),
   ],
 };

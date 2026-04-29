@@ -11,6 +11,8 @@
     "./src/index.ts"
   ],
   "exclude": [
-    "./src/ui/**/*"
+    "./src/ui/**/*",
+    "./src/dashboard/**/*",
+    "./src/gql/**/*"
   ]
 }

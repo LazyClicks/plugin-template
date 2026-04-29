@@ -1,4 +1,7 @@
 node_modules/
 dist/
 src/e2e/__data__/
+src/gql/
 /admin-ui
+dev-server/dashboard/
+dev-server/admin-ui/
