@@ -1,6 +1,6 @@
 # Vendure Plugin Template
 
-A monorepo template for creating Vendure plugins with support for both the **legacy Angular Admin UI** and the **new React Dashboard**. Both can run simultaneously.
+A monorepo template for creating Vendure plugins with [React Dashboard](https://docs.vendure.io/current/core/extending-the-dashboard/extending-overview) extensions.
 
 ## Structure
 
@@ -12,18 +12,17 @@ plugin-template/
 │       ├── src/
 │       │   ├── index.ts              # Plugin entry (exported to consumers)
 │       │   ├── example.plugin.ts     # @VendurePlugin definition
-│       │   ├── ui/                   # Angular Admin UI extension (legacy)
-│       │   └── dashboard/            # React Dashboard extension (new)
+│       │   └── dashboard/            # React Dashboard extension
 │       │       └── index.tsx         # Dashboard entry point
 │       ├── dev-server/
 │       │   ├── index.ts              # Bootstraps the dev Vendure server
-│       │   └── vendure-config.ts     # Dev config with both UI plugins
+│       │   └── vendure-config.ts     # Dev server config
 │       ├── e2e/                      # End-to-end tests
 │       ├── vite.config.mts           # Vite config for Dashboard dev/build
 │       ├── tsconfig.json             # Base TS config
 │       ├── tsconfig.build.json       # TS config for npm build (excludes dashboard/)
 │       ├── tsconfig.dashboard.json   # TS config for React/JSX (used by Vite & IDE)
-│       ├── copy-ui-src.ts            # Copies ui/ & dashboard/ source into dist/
+│       ├── copy-ui-src.ts            # Copies dashboard/ source into dist/
 │       └── package.json
 └── utils/
     └── e2e/                          # Shared e2e helpers
@@ -41,10 +40,9 @@ npm run dev
 
 This starts the Vendure server and the Vite Dashboard dev server concurrently:
 
-| Interface            | URL                             |
-| -------------------- | ------------------------------- |
-| Angular Admin UI     | http://localhost:3000/admin     |
-| React Dashboard      | http://localhost:3000/dashboard |
+| Interface | URL |
+|---|---|
+| React Dashboard | http://localhost:5173/dashboard |
 | Admin API Playground | http://localhost:3000/admin-api |
 
 Login: `superadmin` / `superadmin`
@@ -53,23 +51,11 @@ Login: `superadmin` / `superadmin`
 
 ### Server-side code (`src/`)
 
-Your entities, services, resolvers, and GraphQL schema extensions. This is compiled by `tsc` during `npm run build`.
+Your entities, services, resolvers, and GraphQL schema extensions. Compiled by `tsc` during `npm run build`.
 
-### Angular Admin UI (`src/ui/`)
+### Dashboard extension (`src/dashboard/`)
 
-Legacy Angular extensions. Registered via a static property on the plugin class:
-
-```ts
-export class ExamplePlugin {
-  static uiExtensions = ui;
-}
-```
-
-Compiled at dev/build time by `compileUiExtensions()` (Angular CLI). Uses the existing `codegen` script for GraphQL type generation.
-
-### React Dashboard (`src/dashboard/`)
-
-New React extensions. Registered directly in the `@VendurePlugin` decorator:
+React extensions registered via the `dashboard` property in `@VendurePlugin`:
 
 ```ts
 @VendurePlugin({
@@ -80,7 +66,9 @@ New React extensions. Registered directly in the `@VendurePlugin` decorator:
 
 The entry file uses `defineDashboardExtension()` from `@vendure/dashboard` to declare routes, page blocks, widgets, action bar items, and custom form components.
 
-For GraphQL in dashboard extensions, use IDE integration for autocomplete and type-checking:
+### GraphQL in Dashboard extensions
+
+For autocomplete and type-checking when working with GraphQL in dashboard code:
 
 1. Install the [GraphQL extension for VS Code](https://marketplace.visualstudio.com/items?itemName=GraphQL.vscode-graphql) or [IntelliJ plugin](https://plugins.jetbrains.com/plugin/8097-graphql)
 2. Generate the schema: `npx vendure schema --api admin`
@@ -89,38 +77,31 @@ For GraphQL in dashboard extensions, use IDE integration for autocomplete and ty
    schema: 'schema.graphql'
    ```
 
-See the [full IDE GraphQL integration guide](https://docs.vendure.io/current/core/extending-the-dashboard/extending-overview#ide-graphql-integration) for details.
+See the [full IDE GraphQL integration guide](https://docs.vendure.io/current/core/extending-the-dashboard/extending-overview#ide-graphql-integration).
 
 ### Vite config (`vite.config.mts`)
 
-Used only during development. The `vendureDashboardPlugin` introspects your `vendure-config.ts` to discover plugins and their dashboard extensions. The `pathAdapter` option handles monorepo path resolution:
+Used during development only. The `vendureDashboardPlugin` compiles and loads your `vendure-config.ts` to discover plugins and their dashboard extensions.
 
-```ts
-pathAdapter: {
-    sourceRoot: resolve(__dirname, '../..'),  // workspace root
-    getCompiledConfigPath: ({ outputPath, configFileName }) => {
-        return join(outputPath, 'packages/example-plugin/dev-server', configFileName);
-    },
-},
-```
+The `pathAdapter` option is **required in a monorepo**. It tells the plugin how to resolve paths when the config isn't at the workspace root:
 
-This is needed because in a monorepo the compiled config preserves directory structure relative to the workspace root. See the [PathAdapter docs](https://docs.vendure.io/current/core/reference/dashboard/vite-plugin/vendure-dashboard-plugin#pathadapter).
+- **`sourceRoot`** — the workspace root. TypeScript preserves directory structure relative to this when compiling the config.
+- **`getCompiledConfigPath`** — tells the plugin where the compiled config ended up inside the temp output directory.
+
+See the comments in `vite.config.mts` for a detailed explanation, and the [PathAdapter docs](https://docs.vendure.io/current/core/reference/dashboard/vite-plugin/vendure-dashboard-plugin#pathadapter).
 
 ### Dev server config (`dev-server/vendure-config.ts`)
 
-Registers both UI plugins side-by-side:
-
-- `AdminUiPlugin` — serves the Angular Admin UI
-- `DashboardPlugin` — serves the React Dashboard
+Registers `DashboardPlugin` to serve the Dashboard UI during development.
 
 ## Building & Publishing
 
 ```bash
-npm run build     # Compiles server code + copies ui/ and dashboard/ source to dist/
+npm run build     # Compiles server code + copies dashboard/ source to dist/
 npm publish
 ```
 
-Both `ui/` and `dashboard/` are published as **source files**. Consumers compile them at their own build time — Angular CLI handles `ui/`, and Vite handles `dashboard/` automatically by scanning installed plugins for the `dashboard` property.
+The `dashboard/` directory is published as **source files**. Consumers' Vite builds bundle them automatically by scanning installed plugins for the `dashboard` property.
 
 ## Testing
 
@@ -134,5 +115,4 @@ npm run e2e
 - [Dashboard: Getting Started](https://docs.vendure.io/current/core/extending-the-dashboard/getting-started/)
 - [Dashboard: Monorepo Setup](https://docs.vendure.io/current/core/extending-the-dashboard/getting-started#monorepo-setup)
 - [PathAdapter Reference](https://docs.vendure.io/current/core/reference/dashboard/vite-plugin/vendure-dashboard-plugin#pathadapter)
-- [Dashboard: Migration from Admin UI](https://docs.vendure.io/current/core/extending-the-dashboard/migration)
 - [Publishing a Plugin](https://docs.vendure.io/guides/how-to/publish-plugin/)

@@ -1,10 +1,8 @@
 import { DefaultSearchPlugin, VendureConfig } from "@vendure/core";
-import { AdminUiPlugin } from "@vendure/admin-ui-plugin";
 import { DashboardPlugin } from "@vendure/dashboard/plugin";
 import "dotenv/config";
 import path from "path";
 import { ExamplePlugin } from "../src";
-import { compileUiExtensions } from "@vendure/ui-devkit/compiler";
 
 const apiPort = process.env.API_PORT || 3000;
 
@@ -37,19 +35,6 @@ export const config: VendureConfig = {
     DefaultSearchPlugin.init({}),
     ExamplePlugin.init({
       enabled: true,
-    }),
-    AdminUiPlugin.init({
-      port: 3002,
-      route: "admin",
-      adminUiConfig: {
-        apiPort: +apiPort,
-        apiHost: "http://localhost",
-      },
-      app: compileUiExtensions({
-        devMode: true,
-        extensions: [ExamplePlugin.uiExtensions],
-        outputPath: path.join(__dirname, "./admin-ui"),
-      }),
     }),
     DashboardPlugin.init({
       route: "dashboard",
