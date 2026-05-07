@@ -1,8 +1,8 @@
 import { PluginCommonModule, VendurePlugin } from "@vendure/core";
-import {exampleEntityAdminApiExtensions, shopSchema} from "./api/api-extensions";
+import { exampleEntityAdminApiExtensions, shopSchema } from "./api/api-extensions";
 import { ExampleShopResolver } from "./api/example-shop.resolver";
 
-import {examplePermission, PLUGIN_INIT_OPTIONS} from "./constants";
+import { examplePermission, PLUGIN_INIT_OPTIONS } from "./constants";
 import { ExampleOptions } from "./types";
 import { ExampleEntity } from "./entities/example.entity";
 import { ExampleEntityService } from "./services/example-entity.service";
@@ -35,7 +35,7 @@ import { ExampleAdminResolver } from "./api/example-admin.resolver";
     config.authOptions.customPermissions.push(examplePermission);
     return config;
   },
-  compatibility: '>=3.0.0',
+  compatibility: '>=3.5.0',
   dashboard: './dashboard/index.tsx',
 })
 export class ExamplePlugin {
